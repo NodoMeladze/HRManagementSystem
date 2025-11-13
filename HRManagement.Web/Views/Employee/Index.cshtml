@@ -1,0 +1,238 @@
+﻿@model List<EmployeeViewModel>
+@{
+    ViewData["Title"] = "თანამშრომლები";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-people-fill"></i> თანამშრომლების სია</h1>
+    <a asp-action="Create" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> დამატება
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" name="searchTerm" value="@ViewBag.SearchTerm"
+                           class="form-control" placeholder="ძებნა სახელით ან გვარით..."
+                           aria-label="Search employees" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> ძებნა
+                </button>
+            </div>
+            @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
+            {
+                <div class="col-12">
+                    <a asp-action="Index" class="btn btn-secondary btn-sm">
+                        <i class="bi bi-x-circle"></i> გასუფთავება
+                    </a>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-primary">
+                        <tr>
+                            <th><i class="bi bi-hash"></i> პირადი ნომერი</th>
+                            <th><i class="bi bi-person"></i> სახელი გვარი</th>
+                            <th><i class="bi bi-gender-ambiguous"></i> სქესი</th>
+                            <th><i class="bi bi-envelope"></i> ელ.ფოსტა</th>
+                            <th><i class="bi bi-briefcase"></i> თანამდებობა</th>
+                            <th><i class="bi bi-flag"></i> სტატუსი</th>
+                            <th><i class="bi bi-check-circle"></i> აქტიური</th>
+                            <th style="width: 120px;"><i class="bi bi-gear"></i> მოქმედებები</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var employee in Model)
+                        {
+                            <tr>
+                                <td><code class="text-dark">@employee.PersonalNumber</code></td>
+                                <td>
+                                    <strong>@employee.FullName</strong>
+                                    <br />
+                                    <small class="text-muted">დაბ: @employee.DateOfBirth.ToString("dd.MM.yyyy")</small>
+                                </td>
+                                <td>
+                                    @if (employee.Gender == 1)
+                                    {
+                                        <span class="badge bg-info text-dark">
+                                            <i class="bi bi-gender-male"></i> მამრობითი
+                                        </span>
+                                    }
+                                    else if (employee.Gender == 2)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-gender-female"></i> მდედრობითი
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(employee.Email))
+                                    {
+                                        <a href="mailto:@employee.Email">@employee.Email</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(employee.PositionName))
+                                    {
+                                        <span class="badge bg-info text-dark">
+                                            <i class="bi bi-briefcase-fill"></i> @employee.PositionName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @switch (employee.Status)
+                                    {
+                                        case 0:
+                                            <span class="badge bg-secondary">
+                                                <i class="bi bi-dash-circle"></i> არააქტიური
+                                            </span>
+                                            break;
+                                        case 1:
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> შტატში
+                                            </span>
+                                            break;
+                                        case 2:
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-exclamation-circle"></i> შტატგარეშე
+                                            </span>
+                                            break;
+                                        case 3:
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle"></i> გათავისუფლებული
+                                            </span>
+                                            if (employee.ReleaseDate.HasValue)
+                                            {
+                                                <br />
+                                                <small class="text-muted">@employee.ReleaseDate.Value.ToString("dd.MM.yyyy")</small>
+                                            }
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @if (employee.IsActive)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle-fill"></i> კი
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-hourglass-split"></i> არა
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group" aria-label="Employee actions">
+                                        <a asp-action="Edit" asp-route-id="@employee.Id"
+                                           class="btn btn-sm btn-warning"
+                                           title="რედაქტირება">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger"
+                                                onclick="showDeleteModal('@employee.Id', '@employee.FullName', '@employee.PersonalNumber')"
+                                                title="წაშლა">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted">
+                    <i class="bi bi-info-circle"></i> სულ: <strong>@Model.Count</strong> თანამშრომელი
+                </span>
+                @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
+                {
+                    <span class="badge bg-primary">
+                        ძებნის შედეგი: "@ViewBag.SearchTerm"
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        @if (string.IsNullOrEmpty(ViewBag.SearchTerm))
+        {
+            <span>თანამშრომლები ვერ მოიძებნა. დაამატეთ პირველი თანამშრომელი!</span>
+        }
+        else
+        {
+            <span>ძებნის შედეგები ვერ მოიძებნა "<strong>@ViewBag.SearchTerm</strong>"-ისთვის</span>
+        }
+    </div>
+}
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill"></i> თანამშრომლის წაშლა
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-trash text-danger" style="font-size: 3rem;"></i>
+                </div>
+                <p class="fs-5 text-center fw-bold">ნამდვილად გსურთ თანამშრომლის წაშლა?</p>
+                <div class="alert alert-warning">
+                    <strong id="employeeNameToDelete"></strong>
+                    <br />
+                    <small class="text-muted">პ/ნ: <code id="employeePersonalNumberToDelete"></code></small>
+                </div>
+                <p class="text-muted small text-center">
+                    <i class="bi bi-info-circle"></i> ეს მოქმედება წაშლის თანამშრომელს სისტემიდან
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> არა, გაუქმება
+                </button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> დიახ, წაშლა
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

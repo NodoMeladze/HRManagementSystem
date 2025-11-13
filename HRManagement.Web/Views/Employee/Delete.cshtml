@@ -1,0 +1,47 @@
+﻿@model EmployeeViewModel
+@{
+    ViewData["Title"] = "თანამშრომლის წაშლა";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow border-danger">
+            <div class="card-header bg-danger text-white">
+                <h2 class="mb-0"><i class="bi bi-exclamation-triangle"></i> თანამშრომლის წაშლა</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h4><i class="bi bi-question-circle"></i> ნამდვილად გსურთ თანამშრომლის წაშლა?</h4>
+                </div>
+
+                <dl class="row">
+                    <dt class="col-sm-4">პირადი ნომერი:</dt>
+                    <dd class="col-sm-8">@Model.PersonalNumber</dd>
+
+                    <dt class="col-sm-4">სახელი გვარი:</dt>
+                    <dd class="col-sm-8"><strong>@Model.FullName</strong></dd>
+
+                    <dt class="col-sm-4">ელ.ფოსტა:</dt>
+                    <dd class="col-sm-8">@(Model.Email ?? "-")</dd>
+
+                    <dt class="col-sm-4">თანამდებობა:</dt>
+                    <dd class="col-sm-8">@Model.PositionName</dd>
+
+                    <dt class="col-sm-4">სტატუსი:</dt>
+                    <dd class="col-sm-8">@Model.StatusDisplay</dd>
+                </dl>
+
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> გაუქმება
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> დიახ, წაშლა
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

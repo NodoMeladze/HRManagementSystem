@@ -1,0 +1,60 @@
+﻿@model PositionViewModel
+
+<div class="position-node" style="margin-left: @(Model.Level * 30)px;">
+    <div class="card mb-2 @(Model.Level == 0 ? "border-primary shadow-sm" : "border-secondary")">
+        <div class="card-body py-2 px-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                    <strong class="@(Model.Level == 0 ? "text-primary fs-5" : "")">
+                        <i class="bi bi-briefcase"></i> @Model.Name
+                    </strong>
+
+                    <span class="badge bg-secondary ms-2">
+                        დონე: @Model.Level
+                    </span>
+
+                    @if (Model.EmployeeCount > 0)
+                    {
+                        <span class="badge bg-info text-dark ms-1" title="თანამშრომლების რაოდენობა">
+                            <i class="bi bi-people-fill"></i> @Model.EmployeeCount
+                        </span>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.ParentName))
+                    {
+                        <br />
+                        <small class="text-muted">
+                            <i class="bi bi-arrow-return-right"></i> მშობელი: @Model.ParentName
+                        </small>
+                    }
+                </div>
+
+                <div class="btn-group" role="group">
+                    <a asp-action="Create" asp-route-parentId="@Model.Id"
+                       class="btn btn-sm btn-success"
+                       title="ქვეთანამდებობის დამატება">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                          style="display:inline;"
+                          onsubmit="return confirmDelete('@Model.Name', @Model.EmployeeCount);">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-danger" title="წაშლა">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Children != null && Model.Children.Any())
+    {
+        <div class="position-children">
+            @foreach (var child in Model.Children)
+            {
+                @await Html.PartialAsync("_PositionTreePartial", child)
+            }
+        </div>
+    }
+</div>

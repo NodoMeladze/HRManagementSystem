@@ -1,0 +1,66 @@
+﻿@model PositionViewModel
+
+@{
+    ViewData["Title"] = "თანამდებობის დამატება";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> თანამდებობის დამატება
+                </h2>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    @if (Model.ParentId.HasValue && ViewBag.ParentName != null)
+                    {
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>მშობელი თანამდებობა:</strong> @ViewBag.ParentName
+                        </div>
+
+                        <input type="hidden" asp-for="ParentId" />
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label asp-for="ParentId" class="form-label fw-bold"></label>
+                            <select asp-for="ParentId" class="form-select">
+                                <option value="">ძირეული თანამდებობა (მშობლის გარეშე)</option>
+                                @foreach (var position in (List<PositionViewModel>)ViewBag.AllPositions)
+                                {
+                                    <option value="@position.Id">@position.Name (დონე: @position.Level)</option>
+                                }
+                            </select>
+                            <small class="text-muted">არასავალდებულო - თუ არ აირჩევთ, იქნება ძირეული თანამდებობა</small>
+                            <span asp-validation-for="ParentId" class="text-danger small"></span>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label fw-bold required-label"></label>
+                        <input asp-for="Name" class="form-control" placeholder="მაგ: IT დეპარტამენტის უფროსი" autofocus />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> უკან
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> დამატება
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
